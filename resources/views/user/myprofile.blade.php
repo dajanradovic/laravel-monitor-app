@@ -96,19 +96,8 @@
 
 
 </div>
-<script>
-let userId={{Auth()->user()->id}};
-Echo.private(`App.User.${userId}`)
-    .notification((notification) => {
-        console.log(notification.message);
-      if(confirm(notification.message)){
-        var base_url = window.location.origin;
+    @include('includes.chatinvitationscript')
 
-        location.href = base_url + '/chatroom';
-      };
-
-    });
-</script>
 
 @endsection('content')
 

@@ -3,12 +3,12 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class ChatInvite extends Notification implements ShouldQueue
+class ChatDecline extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -39,16 +39,14 @@ class ChatInvite extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-   
-
     public function toBroadcast($notifiable){
 
         return new BroadcastMessage([
 
-            'message' => Auth()->user()->name . 'wants to start a chat with you?!',
-            'userId' => Auth()->user()->id
+            'message' => Auth()->user()->name . 'cannot chat at the moment'
         ]);
     }
+
     /**
      * Get the array representation of the notification.
      *

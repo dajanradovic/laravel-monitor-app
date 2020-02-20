@@ -27,6 +27,10 @@ Route::post('tasks/updateTaskStatus', 'TasksController@updateTaskStatus')->name(
 
 
 Route::get ('chatroom', 'ChatController@sendMessage')->name('chatroom');
+Route::get ('chatroomfinal', 'ChatController@openChatRoom');
+Route::get ('chatroomdecline', 'ChatController@declineInvitation');
+
+
 Route::post ('chatroom', 'ChatController@send');
 
 

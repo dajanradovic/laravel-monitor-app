@@ -23,8 +23,7 @@
    <p class="text-white font-weight-bold"> you are viewing {{$profileuser->name}} {{$profileuser->surname}}'s profile</p>
   <button type="button" id="privatemessagebutton" class="btn btn-success btn-md btn-block">Send private message</button>
   
-  <form method="GET" action="/chatroom">
-  <input type="hidden" name="invitedUserId" value={{$profileuser->id}} ><button type="submit" class="btn btn-success btn-md mt-1 btn-block">Open chat dialog</button></form>
+  <button type="button" id="chatInvitationButton" class="btn btn-success btn-md mt-1 btn-block">Open chat dialog</button>
   <button type="button" class="btn btn-warning btn-md mt-1 btn-block">Edit profile</button>
   <hr>
 
@@ -81,13 +80,31 @@
 
 </div>
 
-
 <script>
 
-$
+  $('#chatInvitationButton').click(function(){
+
+      let invitedUserId={{$profileuser->id}};
+
+        axios.get('../../chatroom?invitedUserId=' + invitedUserId, {
+     
+     })
+          .then(function (response) {
+      var base_url = window.location.origin;
+   // alert (base_url);
+    location.href = base_url + '/chatroomfinal';
+            })
+          .catch(function (error) {
+    console.log(error);
+              })
+          .then(function () {
+    // always executed
+  });  
+
+
+  });
 
 </script>
-
 
 @endsection('content')
 
