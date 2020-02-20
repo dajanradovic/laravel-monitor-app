@@ -1,0 +1,1 @@
+New user with a name {{$username}} has registered. Thanks.
