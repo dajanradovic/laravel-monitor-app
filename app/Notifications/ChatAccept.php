@@ -3,26 +3,25 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class ChatInvite extends Notification implements ShouldQueue
+class ChatAccept extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $chat_id;
-    
-
+    public $chatId;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($chat_id)
+    public function __construct($chatId)
     {
-        $this->chat_id=$chat_id;   }
+        $this->chatId = $chatId;
+    }
 
     /**
      * Get the notification's delivery channels.
@@ -41,18 +40,17 @@ class ChatInvite extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-   
+    
 
     public function toBroadcast($notifiable){
 
         return new BroadcastMessage([
 
-            'message' => Auth()->user()->name . 'wants to start a chat with you?!',
-            'userId' => Auth()->user()->id,
-            'chat_id' => $this->chat_id
-            
+            'message' => Auth()->user()->name . 'is ready for chat',
+            'chatId' => $this->chatId
         ]);
     }
+
     /**
      * Get the array representation of the notification.
      *

@@ -21,6 +21,7 @@
  
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
      <p id="chatUsers" style="color:white;" class="bg-primary"><i>users in chatroom:</i></p>
+     <p>{{Auth()->user()->name}}</p>
 
     </div>
   </div>
@@ -99,6 +100,12 @@ axios.post('/chatroom', {
 
 })
 
+
+
+var today = new Date();
+var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+var dateTime = date+' '+time;
     
      //$('#chatcontent').append('<li> blago nama</li>');
 
@@ -107,11 +114,11 @@ axios.post('/chatroom', {
 
    if(data.user_name=="{{Auth()->user()->name}}")
    {
-        $('#chatcontent').append('<li style="color:white;"><i>' + data.user_name + ' says: </i>' + data.message.message + '</li>');
+        $('#chatcontent').append('<li style="color:white;"><i>' + data.user_name + ' says: </i>' + data.message.message + '<small class="pull-right">' +dateTime +'</small></li>');
 
    }
 else{
- $('#chatcontent').append('<li style="color:yellow;"><i>' + data.user_name + ' says: </i>' + data.message.message + '</li>');
+ $('#chatcontent').append('<li style="color:yellow;"><i>' + data.user_name + ' says: </i>' + data.message.message + '<small class="pull-right">' +dateTime +'</small></li>');
 
 }
   

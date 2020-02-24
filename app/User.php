@@ -50,4 +50,9 @@ class User extends Authenticatable
 
         return $this->hasMany(PrivateMessage::class);
      }
+
+     public function chats()
+     {
+         return $this->belongsToMany(Chat::class);
+     }
 }

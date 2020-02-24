@@ -2,11 +2,20 @@
 let userId={{Auth()->user()->id}};
 Echo.private(`App.User.${userId}`)
     .notification((notification) => {
-        console.log(notification.message);
+        console.log(notification);
      
      if(notification.type=='App\\Notifications\\ChatDecline'){
 
        alert (notification.message);
+
+     }
+
+     if(notification.type=='App\\Notifications\\ChatAccept'){
+
+       alert (notification.message);
+        var base_url = window.location.origin;
+
+       location.href = base_url + '/chatroomfinal/'+ notification.chatId;
 
      }
 
@@ -17,8 +26,24 @@ Echo.private(`App.User.${userId}`)
                   
                     if(confirm(notification.message)){
                         var base_url = window.location.origin;
+                        let acceptId = notification.userId;
 
-                        location.href = base_url + '/chatroomfinal';
+                         axios.get('../../chatroomaccept?chatId=' + notification.chat_id + '&acceptId=' + acceptId, {
+                    
+                    })
+                        .then(function (response) {
+                 
+                
+                        
+                            })
+                        .catch(function (error) {
+                    console.log(error);
+                            })
+                        .then(function () {
+                    // always executed
+                });  
+
+                        location.href = base_url + '/chatroomfinal/'+ notification.chat_id;
                     }
 
                     else {

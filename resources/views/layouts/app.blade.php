@@ -400,7 +400,6 @@ var back =jQuery(".prev");
  });
 	
 
-  
 
 });
 
