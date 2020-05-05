@@ -57,6 +57,8 @@ hr {
     display: none;
 }
 
+
+
 .flex-container {
   display: flex;
   flex-direction: row;
@@ -253,6 +255,26 @@ a#subjecttitle-bg-dark.text-white:hover{
    background-color: #343a40 !important;
    opacity: inherit;
 }
+
+#inputComment{
+display:none;
+    
+}
+
+footer{
+
+
+    background-color: black;
+    height:30px;
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+    color: white;
+    text-align: center;
+
+    
+
+}
 </style>
 <body>
     <div id="app">
@@ -319,6 +341,9 @@ a#subjecttitle-bg-dark.text-white:hover{
             @yield('content')
         </main>
     </div>
+     <footer>
+  
+    </footer>
     <script>
  
 
@@ -351,13 +376,54 @@ jQuery(document).ready(function(){
 
 
 
-$('#updateTaskStatus1').click(function(e){
-    
-    
-
-    $('#form1').submit();
+$('.updateTaskStatusToRviewed').click(function(e){
+     
+     var taskId=$('#taskIdHidden').val();
+     axios.get('tasks/updateTaskStatus?id='+ taskId , {
+                    
+                    })
+                        .then(function (response) {
+                 
+                
+                        
+                            })
+                        .catch(function (error) {
+                    console.log(error);
+                            })
+                        .then(function () {
+                    // always executed
+                });  
 });
 
+/*$('.markAsRead').click(function(e){
+     
+     var taskId=$('#taskIdHidden').val();
+     axios.get('tasks/updateTaskStatus?id='+ taskId , {
+                    
+                    })
+                        .then(function (response) {
+                 
+                
+                        
+                            })
+                        .catch(function (error) {
+                    console.log(error);
+                            })
+                        .then(function () {
+                    // always executed
+                });  
+});*/
+
+
+
+
+            $('#openInputCommentBox').on('click',function()
+
+                                {
+
+                            $('#inputComment').slideDown(200);
+
+                        });
 
 
 var back =jQuery(".prev");
@@ -401,11 +467,65 @@ var back =jQuery(".prev");
 	
 
 
+$('#submitCommentForm').click(function(){
+
+    $('#submitComment').submit();
 });
+
+});
+
+function markAsRead(notificationId){
+
+    axios.get('../../tasks/markAsRead?id='+ notificationId , {
+                    
+                    })
+                        .then(function (response) {
+                 
+                                console.log(response);
+                        
+                            })
+                        .catch(function (error) {
+                    console.log(error);
+                            })
+                        .then(function () {
+                    // always executed
+                });  
+}
+
+
+function markMessageAsRead(notificationId){
+    alert('horny');
+    axios.get('../../markMessageAsRead?id='+ notificationId , {
+                    
+                    })
+                        .then(function (response) {
+                 
+                                console.log(response);
+                        
+                            })
+                        .catch(function (error) {
+                    console.log(error);
+                            })
+                        .then(function () {
+                    // always executed
+                });  
+}
+
+
+
+    setInterval(function(){
+        var today = new Date();
+var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+var dateTime = date+' '+time;
+
+        document.querySelector('footer').textContent = dateTime;
+     }, 1000);
+
 
 
 </script>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>

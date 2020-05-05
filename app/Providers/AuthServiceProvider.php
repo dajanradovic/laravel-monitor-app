@@ -29,15 +29,13 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('isSupervisor', function($user){
 
            return $user->department == 'Supervisor';
+
+        });
+
+        Gate::define('isPhoneAgent', function($user){
+
+            return $user->department == 'Phone-agent';
          
-
-
-         
-          
-          
-           
-          
-
         });
 
         

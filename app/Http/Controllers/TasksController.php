@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 use App\Task;
 use App\User;
+use App\Comment;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreTask;
 use App\Notifications\TaskAdded;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 
@@ -113,4 +115,38 @@ class TasksController extends Controller
        
 
     }
+
+    public function createComment(Request $request){
+
+        $request->validate([
+            'comment' => '|required|string|max:300',
+            'task_id' => 'required'
+        ]);
+
+        $comment=Comment::create([
+            'task_id' => $request->task_id,
+            'user_id' => Auth()->user()->id,
+            'body' => $request->comment
+            
+
+
+    ]);
+    }
+
+    public function markAsRead(Request $request)
+            {
+                $id=$request->id;
+                $notification = DB::table('notifications')->where('id', $id)->update([
+
+                    'read_at' => now()
+                ]);
+              
+              /*  $notification->update([
+
+                'read_at' => now()
+               ]);*/
+             //  return response($notification);
+
+            }
+
 }

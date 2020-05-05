@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 
 class UserOffline extends Command
 {
@@ -38,29 +39,45 @@ class UserOffline extends Command
      */
     public function handle()
     {
-        $last_activity = \DB::table('sessions')->select('last_activity', 'user_id')->where('user_id','!=', null)->get();
-        //dd($last_activity);
-        
-        foreach($last_activity as $activity){
-        
-            $last=$activity->last_activity;
-            
-            if (session_time_remaining($last)<0){
-        
-                User::where('id', $activity->user_id)->update(['online' => 0]);
-               // $user = new User;
-              //  $user->find($activity->user_id);
-              //  $user->online=0;
-              //  $user->save();
-            }
+
+
+        $date=date('Y-m-d H:i:s');
+        /* echo "Current Date : ".$date;
+         echo "<br>";
+       echo "Date in seconds : ";*/
+       $currentTimeSeconds=strtotime(date($date));
+       
+         
+         
+         $last_activity = \DB::table('sessions')->select('last_activity', 'user_id')->where('user_id','!=', null)->orderBy('last_activity', 'DESC')->get();
+       //dd($last_activity);
+       
+       foreach($last_activity as $activity){
+       
+          $last=$currentTimeSeconds -$activity->last_activity;
+           
+           if ($last > Config::get('session.lifetime') * 60){
+       
+               User::where('id', $activity->user_id)->update(['online' => 0]);
+              // $user = new User;
+             //  $user->find($activity->user_id);
+             //  $user->online=0;
+             //  $user->save();
+           }
+       
+           else{
+       
+             User::where('id', $activity->user_id)->update(['online' => 1]);
+           }
+       
+           
+       
+       
+       }
+
     }
 
-     function session_time_remaining($last){
+    
+}
 
-        $session_time_remaining_minutes = ($last + (\Config::get('session.lifetime') * 60) - time()) / 60;
-        
-        return $session_time_remaining_minutes;
-        
-        }
-}
-}
+

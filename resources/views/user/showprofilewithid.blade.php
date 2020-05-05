@@ -10,7 +10,7 @@
 <nav aria-label="breadcrumb " style="margin-left: -15px;" >
   <ol class="breadcrumb bg-dark text-warning pull-left" style="margin-left: 0px;">
     <li class="breadcrumb-item active text-warning" aria-current="page">Users List</li>
-	 <li class="breadcrumb-item text-warning " aria-current="page">Perosonal Profile</li>
+	 <li class="breadcrumb-item text-warning " aria-current="page">Personal Profile</li>
   </ol>
 </nav>
 
@@ -24,7 +24,9 @@
   <button type="button" id="privatemessagebutton" class="btn btn-success btn-md btn-block">Send private message</button>
   
   <button type="button" id="chatInvitationButton" class="btn btn-success btn-md mt-1 btn-block">Open chat dialog</button>
-  <button type="button" class="btn btn-warning btn-md mt-1 btn-block">Edit profile</button>
+     @can('isSupervisor', Auth()->user())
+    <a class="btn btn-warning btn-md mt-1 btn-block" href="/users/{{$profileuser->id}}/edit">Edit profile</a>
+    @endcan
   <hr>
 
   
@@ -35,7 +37,14 @@
 	 @endforeach
     </div>
   </div>
-  <div class="col-md-3">
+  <div class="col-md-3 mt-3">
+
+   @if($profileuser->img == "")
+   <img style="width:100%; height: 285px;" src="{{asset('images/default-avatar.png')}}"  class="rounded pr-3" alt="profile photo">
+
+   @else 
+   <img style="width:100%; height: 285px;" src="/storage/{{$profileuser->img}}" class="rounded ml-3" alt="profile photo">
+    @endif
   </div>
   <div class="col-md-6 ">
  

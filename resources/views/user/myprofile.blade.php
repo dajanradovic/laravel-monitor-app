@@ -25,7 +25,13 @@
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
       <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/tasks')}}"  aria-selected="true">Home</a>
       <a class="nav-link text-white active" id="v-pills-profile-tab"  href="{{url ('/users/profile')}}"  aria-controls="v-pills-profile" aria-selected="false">Profile</a>
-      <a class="nav-link text-white" id="v-pills-messages-tab"  href="{{route ('supervisor/addedtasks')}}" aria-selected="false">New tasks<span class="badge badge-pill badge-primary ml-1">1</span></a>
+      @can('isSupervisor', Auth()->user())
+	 		<a class="nav-link text-white" id="v-pills-messages-tab"  href="{{route ('supervisor/addedtasks')}}" aria-selected="false">New tasks<span class="badge badge-pill badge-primary ml-1">{{auth()->user()->notifications->count()}}</span></a>
+	 	  <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/register')}}"  aria-selected="true">Add new user</a>
+	@endcan
+	 @can('isPhoneAgent', Auth()->user())
+	 	  <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/tasks/create')}}"  aria-selected="true">Add new task</a>
+	@endcan
       
   	<a class="nav-link text-white" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Private messages
@@ -37,7 +43,7 @@
     <a class="nav-link inboxoutbox text-white" href="../users/profile/inbox">Inbox</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link inboxoutbox text-white" href="/profile/outbox">Outbox</a>
+    <a class="nav-link inboxoutbox text-white" href="../users/profile/outbox">Outbox</a>
   </li>
  </ul>
   </div>
@@ -54,7 +60,24 @@
 	 @endforeach
     </div>
   </div>
-  <div class="col-md-3">
+  <div class="col-md-3 mt-3">
+
+    @if(Auth()->user()->img == "")
+   <img style="width:100%; height: 285px;" src="{{asset('images/default-avatar.png')}}"  class="rounded ml-3" alt="profile photo">
+
+
+   @else 
+   <img style="width:100%; height: 285px;" src="/storage/{{Auth()->user()->img}}" class="rounded ml-3" alt="profile photo">
+    @endif
+   <form action="/users/uploadProfilePhoto" method="POST" enctype="multipart/form-data">
+   @csrf
+   <div class="form-group ml-3">
+    <label for="img">Pick a profile-photo</label>
+
+   <input type="file" name="img" class="form-control-file" />
+   </div>
+   <input type="submit" class="btn btn-sm btn-primary ml-3" value="Upload">
+   </form>
   </div>
   <div class="col-md-6 ">
 

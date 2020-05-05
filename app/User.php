@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'surname', 'town', 'address', 'department','workplace'
+        'name', 'email', 'password', 'surname', 'town', 'address', 'department','workplace','img'
     ];
 
     protected $attributes = [
@@ -54,5 +54,10 @@ class User extends Authenticatable
      public function chats()
      {
          return $this->belongsToMany(Chat::class);
+     }
+
+     public function comments(){
+
+        return  $this->hasMany(Comment::class);
      }
 }

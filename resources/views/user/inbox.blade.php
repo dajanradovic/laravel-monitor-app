@@ -27,7 +27,13 @@
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
       <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/tasks')}}"  aria-selected="true">Home</a>
       <a class="nav-link text-white" id="v-pills-profile-tab"  href="{{url ('/users/profile')}}"  aria-controls="v-pills-profile" aria-selected="false">Profile</a>
-      <a class="nav-link text-white" id="v-pills-messages-tab"  href="{{route ('supervisor/addedtasks')}}" aria-selected="false">New tasks<span class="badge badge-pill badge-primary ml-1">1</span></a>
+       @can('isSupervisor', Auth()->user())
+	 		<a class="nav-link text-white" id="v-pills-messages-tab"  href="{{route ('supervisor/addedtasks')}}" aria-selected="false">New tasks<span class="badge badge-pill badge-primary ml-1">{{auth()->user()->notifications->count()}}</span></a>
+	 	  <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/register')}}"  aria-selected="true">Add new user</a>
+	@endcan
+	 @can('isPhoneAgent', Auth()->user())
+	 	  <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/tasks/create')}}"  aria-selected="true">Add new task</a>
+	@endcan
       
   	<a class="nav-link text-white" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Private messages
@@ -39,7 +45,7 @@
     <a class="nav-link inboxoutbox text-white active" href="#">Inbox</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link inboxoutbox text-white" href="users/profile/outbox">Outbox</a>
+    <a class="nav-link inboxoutbox text-white" href="./outbox">Outbox</a>
   </li>
  </ul>
   </div>
@@ -61,7 +67,19 @@
   <div class="col-md-8 bg-dark mt-3">
   <div class="list-group bg-dark mt-2">
   @foreach($inboxmessages as $message)
-        <a href="/users/profile/inbox/{{$message['id']}}" class="text-white" style="border-bottom: 1px solid white;" id="subjecttitle">
+
+  @foreach($unreadPrivateMessages as $unreadPrivateMessage)
+
+   @if ($unreadPrivateMessage->data['privateMessageId'] == $message->id)
+        <a  onclick="markMessageAsRead('{{$unreadPrivateMessage->id}}')" href="/users/profile/inbox/{{$message['id']}}" class="text-warning" style="border-bottom: 1px solid white;" id="subjecttitle">
+          <span><b>{{$message->subject->name}}</b></span>
+        </a>
+   @endif
+    
+
+ 
+  @endforeach
+  <a href="/users/profile/inbox/{{$message['id']}}" class="text-white" style="border-bottom: 1px solid white;" id="subjecttitle">
           <span>{{$message->subject->name}}</span>
         </a>
   @endforeach

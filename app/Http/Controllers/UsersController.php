@@ -6,6 +6,9 @@ use App\User;
 use App\Subject;
 use App\PrivateMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use App\Notifications\NewPrivateMessage;
+use Illuminate\Support\Facades\Notification;
 
 class UsersController extends Controller
 {
@@ -36,17 +39,19 @@ class UsersController extends Controller
 
         $users=User::where('online', true)->get();
         $inboxmessages = PrivateMessage::where('recipientId', Auth()->user()->id)->get();
+        $unreadPrivateMessages = Auth()->user()->unreadNotifications->where('type', 'App\Notifications\NewPrivateMessage');
 
         
        // dd($privatemessage->name);
 
        
-        return view ('user.inbox')->with(['users'=> $users, 'inboxmessages' => $inboxmessages ]);
+        return view ('user.inbox')->with(['users'=> $users, 'inboxmessages' => $inboxmessages, 'unreadPrivateMessages' => $unreadPrivateMessages ]);
     }
 
     public function outbox(){
         $users=User::where('online', true)->get();
-        return view ('user.outbox')->with('users', $users);
+        $inboxmessages = PrivateMessage::where('user_id', Auth()->user()->id)->get();
+        return view ('user.outbox')->with(['users'=> $users, 'inboxmessages' => $inboxmessages ]);
 
     }
 
@@ -79,9 +84,14 @@ class UsersController extends Controller
 
         ]);
 
+
+        $user = User::find($request->recipientId);
+
         session()->flash('message', 'Private message has been successfully submitted');
 
-        return redirect()->action('UsersController@sendPrivateMessage', ['profileuser' => $request->recipientId]);
+        Notification::send($user, new NewPrivateMessage($privateMessage->id));
+
+       // return redirect()->action('UsersController@sendPrivateMessage', ['profileuser' => $request->recipientId]);
         
 
     }
@@ -113,6 +123,61 @@ class UsersController extends Controller
 
         ]);
 
-        session()->flash('message', 'Private message has been successfully submitted');
+        
+        return redirect()->back();
+    }
+
+
+    public function uploadProfilePhoto (Request $request){
+
+            $request->validate([
+
+                'img' => 'required | file | image |max: 4999'
+
+            ]);
+
+            File::delete(public_path('storage/' . Auth()->user()->img));
+
+
+            $imageName = $request->img->getClientOriginalName();
+            $user = Auth()->user();
+
+            $user->update([
+
+                'img'=>$imageName
+            ]);
+            $request->img->storeAs('public', $imageName);
+    }
+
+    public function edit (User $user){
+
+                return view ('user.edituser')->with('user', $user);
+
+    }
+
+    public function update (User $user, Request $request){
+
+
+        
+        $request->validate([
+           
+            'name' => 'required | string|max:255',
+            'email' => 'unique:users,email,'.$user->id,
+            'surname' => 'required| string| max:255',
+            'town' => 'required| string|  max:255',
+            'address' => 'required| string| min:8',
+            'department' => 'required| string| max:255',
+            'workplace' => 'required_if:department,Technician on terrain| string| min:5 |max:255',
+        ]);
+
+        $user->name = $request->name;
+        $user->surname = $request->surname;
+        $user->town = $request->town;
+        $user->email = $request->email;
+        $user->address = $request->address;
+        $user->department = $request->department;
+        $user->workplace = $request->workplace;
+        $user->save();
+
     }
 }
