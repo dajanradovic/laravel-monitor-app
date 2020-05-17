@@ -48,15 +48,16 @@ class ChatController extends Controller
         $chatID = Chat::find($chat)->first();
         //dd($chatID->id);
         //dd($chatID->withPivot());
-
+        $chatUsers=$chat->users;
+      
         foreach (Auth()->user()->chats as $chat){
 
             //dd($chat);
 
 
             if ($chat->id == $chatID->id){
-
-                return view ('chatroom');
+                
+                return view ('chatroom')->with(['chatUsers' => $chatUsers]);
             }
 
         } ;

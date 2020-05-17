@@ -38,6 +38,12 @@ class AuthServiceProvider extends ServiceProvider
          
         });
 
+        Gate::define('isTechnician', function($user){
+
+            return $user->department == 'Technician on terrain';
+         
+        });
+
         
     }
 }

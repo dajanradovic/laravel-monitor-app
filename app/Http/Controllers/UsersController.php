@@ -8,6 +8,8 @@ use App\PrivateMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use App\Notifications\NewPrivateMessage;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Notification;
 
 class UsersController extends Controller
@@ -91,8 +93,8 @@ class UsersController extends Controller
 
         Notification::send($user, new NewPrivateMessage($privateMessage->id));
 
-       // return redirect()->action('UsersController@sendPrivateMessage', ['profileuser' => $request->recipientId]);
-        
+        //return redirect()->action('UsersController@sendPrivateMessage', ['profileuser' => $request->recipientId]);
+        return back();
 
     }
 
@@ -105,6 +107,13 @@ class UsersController extends Controller
 
         return view ('user.inboxmessage')->with(['users' => $users, 'samesubject' => $samesubject, 'privatemessage' => $privatemessage]);
 
+    }
+
+    public function markInboxMessageAsRead(Request $request){
+
+        $notification = DB::table('notifications')->where('id', $request->notificationId);
+        $notification->delete();
+        
     }
 
     public function privateMessageReply(Request $request){
@@ -178,6 +187,8 @@ class UsersController extends Controller
         $user->department = $request->department;
         $user->workplace = $request->workplace;
         $user->save();
+
+        return redirect('/users/profile/'.$user->id)->with('userInfoUpdated', 'userInfoUpdated');
 
     }
 }

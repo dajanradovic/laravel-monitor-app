@@ -82,7 +82,7 @@
 
 
 
-
+@include('includes.chatinvitationscript')
 @endsection('content')
 
 

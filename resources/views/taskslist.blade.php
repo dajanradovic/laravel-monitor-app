@@ -18,6 +18,36 @@
 
 </div>
 </div>
+<div class="row">
+<div class="col-md-12" style="padding-left:0px">
+@include('includes.usersAbility')
+@if (session()->has('success'))
+<div class="alert alert-success" role="alert">
+  Successfully added comment!
+</div>
+@endif
+@if (session()->has('edited'))
+<div class="alert alert-success" role="alert">
+  Task successfully edited!
+</div>
+@endif
+@if (session()->has('taskDeleted'))
+<div class="alert alert-success" role="alert">
+  Task successfully deleted!
+</div>
+@endif
+@if (session()->has('userRegistered'))
+<div class="alert alert-success" role="alert">
+  You have registered new user
+</div>
+@endif
+@if (session()->has('taskEdited'))
+<div class="alert alert-success" role="alert">
+  You have successfully edited the task
+</div>
+@endif
+</div>
+</div>
 
 <div class="row">
   <div class="col-md-3 bg-dark" style="margin-top:15px;">
@@ -29,8 +59,11 @@
 	 		<a class="nav-link text-white" id="v-pills-messages-tab"  href="{{route ('supervisor/addedtasks')}}" aria-selected="false">New tasks<span class="badge badge-pill badge-primary ml-1">{{auth()->user()->unreadNotifications->where('type', 'App\Notifications\TaskAdded')->count()}}</span></a>
 	 	  <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/register')}}"  aria-selected="true">Add new user</a>
 	@endcan
+	@can('isTechnician', Auth()->user())
+	 		<a class="nav-link text-white" id="v-pills-messages-tab"  href="{{route ('supervisor/addedtasks')}}" aria-selected="false">New tasks<span class="badge badge-pill badge-primary ml-1">{{auth()->user()->unreadNotifications->where('type', 'App\Notifications\TaskDelegatedToTechnician')->count()}}</span></a>
+	@endcan
 	 @can('isPhoneAgent', Auth()->user())
-	 	  <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/tasks/create')}}"  aria-selected="true">Add new task</a>
+	 	  	 <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/tasks/create')}}"  aria-selected="true">Add new task</a>
 	@endcan
   	<a class="nav-link text-white" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Private messages<span class="badge badge-pill badge-primary ml-1">{{auth()->user()->unreadNotifications->where('type', 'App\Notifications\NewPrivateMessage')->count()}}</span>
@@ -61,14 +94,23 @@
 	 @endforeach
     </div>
   </div>
+
+  @can('isTechnician', Auth()->user())
+		@include ('includes.techniciandashboard')
+@endcan
+
+	@cannot('isTechnician', Auth()->user())
   <div class="col-md-9">
 
   @foreach ($tasks as $task)
 
 <div class="card text-center mt-3 border border-dark">
   <div class="card-header">
-   	 <span class="float-left">Problem number </span>
+   	 <span class="float-left"><b>#{{$task->id}}</b> </span>
 	<p>
+	@if ($task->status=='completed')
+	<span style="color:green; font-size:20px">Completed!</span>
+	@endif
 	@cannot('isSupervisor', Auth()->user())
 	<button class="btn btn-primary float-right mt-3" type="button" data-toggle="collapse" data-target=".multi-collapse{{$task->id}}" aria-expanded="false" aria-controls="multiCollapseExample{{$task->id}} multiCollapseExample2{{$task->id}}">Details</button>
 	@endcannot 
@@ -82,13 +124,18 @@
 	@endcan
 			 
 			  
-			  @if ($task->status == 'problem submitted' && Auth()->user()->department == 'Phone-agent')
+			  @if ($task->status == 'submitted' && Auth()->user()->department == 'Phone-agent')
 			 
 					
 
 						<form class="inline-block" method="GET" action="/tasks/{{$task->id}}/edit">
 									@csrf
 						  <button class="btn btn-warning float-right mr-3" type="submit">Edit</button>
+						</form>
+						<form class="inline-block" method="POST" action="/tasks/{{$task->id}}">
+									@method('delete')
+									@csrf
+						  <button class="btn btn-danger float-right mr-3" type="submit">Delete</button>
 						</form>
 				
 
@@ -133,7 +180,7 @@
 									<li class="text-md-left  mb-1"style="width:190px;">{{$task->county}}</li>
 									<li class="text-md-left  mb-1"style="width:190px;">{{$task->phone}}</li>
 									
-									<li class="text-md-left  mb-1 " style="width:190px;">{{$task->email}}></li>
+									<li class="text-md-left  mb-1 " style="width:190px;">{{$task->email}}</li>
 									
 
 									</ul>
@@ -154,11 +201,13 @@
 	 <p class="text-danger text-md-left">- {{$comment->body}} <small class="text-md-left text-dark" style="padding-bottom: 0px;">written by {{$comment->user->name}} on {{$comment->created_at}}</small></p>
 	 
 	 @endforeach
-	 <button id="openInputCommentBox" class="btn btn-sm btn-warning" style="width:120px; padding: 0px;">Enter comment</button>
-	 <div style="text-align: left;" id="inputComment"><form id="submitComment" action="{{route ('submitcomment')}}" method="POST">
+	 @if($task->status !=='completed' && Auth()->user()->department !== 'Phone-agent' )
+	 <button class="openInputCommentBox btn btn-sm btn-warning" style="width:120px; padding: 0px;">Enter comment</button>
+	@endif
+	 <div style="text-align: left;" class="inputComment"><form class="submitComment" action="{{route ('submitcomment')}}" method="POST">
 	 @csrf
 	 <input type="hidden" name="task_id" value="{{$task->id}}" />
-	 <input  type="text" name="comment"/></form><span class="badge badge-pill badge-primary ml-1" style="cursor:pointer;" id="submitCommentForm" title="Post a comment">Go</span></div>
+	 <input  type="text" name="comment"/></form><span class="badge badge-pill badge-primary ml-1 submitCommentForm" style="cursor:pointer;" title="Post a comment">Go</span></div>
       </div>
     </div>
   </div>
@@ -167,36 +216,19 @@
   
   
   
-  <div class="card-footer text-muted">
-  <div class="arrow-steps clearfix">
-          <div class="step current"> <span>Problem submitted</span> </div>
-		@if($task->status == 'reviewed by supervisor')
-			<div class="step current"> <span style="margin: 0 auto;">Reviewed by supervisor</span> </div>
-		@else
-          <div class="step"> <span style="margin: 0 auto;">Reviewed by supervisor</span> </div>
-
-		@endif
-          <div class="step"> <span> Problem delegated</span> </div>
-          <div class="step"> <span>Being solved</span> </div>
-			</div>
-	<!--	<div class="nav clearfix">
-        <a href="#" class="prev">Previous</a>
-        <a href="#" class="next pull-right">Next</a>
-		</div>-->
-
-</div>
+  @include('includes.arrow')
 </div>
 </div>
 
 @endforeach
    
 </div>
-
+@endcannot
 
 </div>
 
 
-
+@include('includes.chatinvitationscript')
 @endsection('content')
 
 

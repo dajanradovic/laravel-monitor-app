@@ -24,7 +24,11 @@ body {
 	 <li class="breadcrumb-item text-warning " aria-current="page">Add new task</li>
   </ol>
 </nav>
-
+@if (session()->has('success'))
+<div class="alert alert-success" role="alert">
+  New task successfully added!
+</div>
+@endif
 </div>
 </div>
     <div class="row justify-content-center">
@@ -213,4 +217,5 @@ body {
         </div>
     </div>
 </div>
+@include('includes.chatinvitationscript')
 @endsection

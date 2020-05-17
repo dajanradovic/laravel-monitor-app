@@ -17,6 +17,7 @@
     
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    
     <script src="{{ asset('js/app.js') }} "></script>
     
     <!-- Scripts -->
@@ -28,8 +29,8 @@
 <style>
 
 body{
-    
-    background-image: url("{{asset('images/919.jpg')}}") !important;
+    background-color: #bcb4a9;
+  // background-image: url("{{asset('images/919.jpg')}}") !important;
     opacity: 0.9;
        
 }
@@ -108,7 +109,7 @@ a, a:active {
 }
 
 a:hover {
-	color: #999;
+	color: black;
 }
 
 /* Breadcrups CSS */
@@ -256,7 +257,7 @@ a#subjecttitle-bg-dark.text-white:hover{
    opacity: inherit;
 }
 
-#inputComment{
+.inputComment{
 display:none;
     
 }
@@ -297,20 +298,14 @@ footer{
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
                         @guest
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                            </li>
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
+                            
+                          
                         @else
                             <li class="nav-item">
-                                <a class="nav-link mr-4 text-warning font-italic" href="{{ url('tasks') }}">{{ __('Dashboard') }}</a>
+                                <a class="nav-link mr-4 text-warning font-weight-bold" style="text-shadow: -1px 0 grey, 0 1px grey, 1px 0 grey, 0 -1px grey;" href="{{ url('tasks') }}">{{ __('Dashboard') }}</a>
                             </li>
                             <li class="nav-item mr-4 ">
-                                <a class="nav-link text-warning font-italic" href="{{ url('users') }}">{{ __('Users List') }}</a>
+                                <a class="nav-link text-warning font-weight-bold" style="text-shadow: -1px 0 grey, 0 1px grey, 1px 0 grey, 0 -1px grey;" href="{{ url('users') }}">{{ __('Users List') }}</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -340,14 +335,16 @@ footer{
         <main class="py-4">
             @yield('content')
         </main>
+        
     </div>
-     <footer>
-  
-    </footer>
+    
+   
+    
+   
     <script>
- 
+ $(document).ready(function(){
 
-jQuery(document).ready(function(){
+ 
 
     if ($('.selectchange').val() === "Technician on terrain"){
                 
@@ -376,52 +373,21 @@ jQuery(document).ready(function(){
 
 
 
-$('.updateTaskStatusToRviewed').click(function(e){
-     
-     var taskId=$('#taskIdHidden').val();
-     axios.get('tasks/updateTaskStatus?id='+ taskId , {
-                    
-                    })
-                        .then(function (response) {
-                 
-                
-                        
-                            })
-                        .catch(function (error) {
-                    console.log(error);
-                            })
-                        .then(function () {
-                    // always executed
-                });  
-});
-
-/*$('.markAsRead').click(function(e){
-     
-     var taskId=$('#taskIdHidden').val();
-     axios.get('tasks/updateTaskStatus?id='+ taskId , {
-                    
-                    })
-                        .then(function (response) {
-                 
-                
-                        
-                            })
-                        .catch(function (error) {
-                    console.log(error);
-                            })
-                        .then(function () {
-                    // always executed
-                });  
-});*/
 
 
 
 
-            $('#openInputCommentBox').on('click',function()
+
+
+
+
+
+
+            $('.openInputCommentBox').on('click',function()
 
                                 {
 
-                            $('#inputComment').slideDown(200);
+                            $(this).next().slideDown(200);
 
                         });
 
@@ -467,40 +433,29 @@ var back =jQuery(".prev");
 	
 
 
-$('#submitCommentForm').click(function(){
+$('.submitCommentForm').on('click', function(){
 
-    $('#submitComment').submit();
+    $(this).prev().submit();
 });
 
 });
 
-function markAsRead(notificationId){
-
-    axios.get('../../tasks/markAsRead?id='+ notificationId , {
-                    
-                    })
-                        .then(function (response) {
-                 
-                                console.log(response);
-                        
-                            })
-                        .catch(function (error) {
-                    console.log(error);
-                            })
-                        .then(function () {
-                    // always executed
-                });  
-}
 
 
-function markMessageAsRead(notificationId){
+function markMessageAsRead(taskId, notificationIda){
+     
     
-    axios.get('../../markMessageAsRead?id='+ notificationId , {
+     axios.post('../../tasks/taskStatusChanged' , {
+           
+              id: taskId,
+              notificationId:notificationIda
+     
+    }
                     
-                    })
+                    )
                         .then(function (response) {
                  
-                                console.log(response);
+                
                         
                             })
                         .catch(function (error) {
@@ -509,24 +464,91 @@ function markMessageAsRead(notificationId){
                         .then(function () {
                     // always executed
                 });  
-}
+};
+
+function markMessageAsReadByTechnician(taskId, notificationIda){
+     
+    
+     axios.post('../../tasks/taskStatusChangedToBeingSolved' , {
+           
+              id: taskId,
+              notificationId:notificationIda
+     
+    }
+                    
+                    )
+                        .then(function (response) {
+                 
+                
+                        
+                            })
+                        .catch(function (error) {
+                    console.log(error);
+                            })
+                        .then(function () {
+                    // always executed
+                });  
+};
+
+function changeStatusToCompleted(taskId){
+     
+    
+     axios.post('../../tasks/taskStatusCompleted' , {
+           
+              id: taskId,
+             
+     
+    }
+                    
+                    )
+                        .then(function (response) {
+                 
+                            location.reload(true);
+                        
+                            })
+                        .catch(function (error) {
+                    console.log(error);
+                            })
+                        .then(function () {
+                    // always executed
+                });  
+};
+
+function markInboxMessageAsRead(notificationIdo, messageId){
+     
+    
+     axios.post('../../users/markInboxMessageAsRead' , {
+           
+              notificationId: notificationIdo,
+             
+     
+    }
+                    
+                    )
+                        .then(function (response) {
+                            window.location.replace('/users/profile/inbox/' +messageId);
+                
+                        
+                            })
+                        .catch(function (error) {
+                    console.log(error);
+                            })
+                        .then(function () {
+                    // always executed
+                });  
+};
 
 
 
-    setInterval(function(){
-        var today = new Date();
-var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-var dateTime = date+' '+time;
-
-        document.querySelector('footer').textContent = dateTime;
-     }, 1000);
 
 
+    
 
 </script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 </body>
 </html>

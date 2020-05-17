@@ -7,8 +7,11 @@ use App\Comment;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreTask;
 use App\Notifications\TaskAdded;
+use App\Notifications\TaskDelegatedToTechnician;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Gate;
+
 
 
 
@@ -21,7 +24,11 @@ class TasksController extends Controller
      */
     public function index()
     {
+
+        
         $users=User::where('online', true)->get();
+
+       
        $tasks = Task::all();
         return view ('taskslist')->with(['tasks'=> $tasks, 'users'=>$users ]);
     }
@@ -33,7 +40,16 @@ class TasksController extends Controller
      */
     public function create()
     {
-        return view('createtask');
+        if (Gate::allows('isPhoneAgent', Auth()->user())) {
+            return view('createtask');
+            
+        }
+
+        else{
+
+          return   'You are not authorized to add tasks';
+        }
+       ;
     }
 
     /**
@@ -48,11 +64,15 @@ class TasksController extends Controller
         //dd($request->all());
         
         $task =Task::create($request->all());
+        $task->status="submitted";
+        $task->save();
        
         
 
         $users = User::where('department', 'Supervisor')->get();
         Notification::send($users, new TaskAdded($task->id));
+        return back()->with('success', 'you have successfully added the new task');
+
         
     }
 
@@ -90,7 +110,7 @@ class TasksController extends Controller
         $task=Task::find($id);
         $task->update($request->all());
 
-        return redirect ('/tasks');
+        return redirect ('/tasks')->with('taskEdited', 'you have successfully edited the task');
     }
 
     /**
@@ -99,22 +119,71 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Task $task)
     {
-        //
+        
+        
+  
+        $notifications = DB::table('notifications')->where('type', 'App\Notifications\TaskAdded' )->get();
+       // dd($notifications);
+        foreach($notifications as $notification){
+                 $temporary =json_decode($notification->data, true);
+             //    dd($temporary['taskId']);
+            if ($temporary['taskId'] == strval($task->id)){
+
+                DB::table('notifications')->where('id', $notification->id )->delete();
+            }
+        }
+     
+        $task->delete();
+        return redirect ('/tasks')->with('taskDeleted', 'you have successfully deleted the task');
+
+
     }
 
-    public function updateTaskStatus(Request $request)
+    public function changeTaskStatus(Request $request)
     {
-
-        
+           
+      
        $task=Task::find($request->id);
-       $task->status = 'reviewed by supervisor';
+
+       
+       $task->status ='reviewed by supervisor';
        $task->save();
-        $task->save();
+       $notificationId=$request->notificationId;
+        $notification = DB::table('notifications')->where('id', $notificationId);
+        $notification->delete();
+       $users=User::where('department', 'Technician on terrain')->get();
+       Notification::send($users, new TaskDelegatedToTechnician($request->id));
+       
+        
        
 
     }
+
+    public function changeTaskStatusToBeingSolved(Request $request){
+
+                 
+       $task=Task::find($request->id);
+       $task->status = 'being solved';
+       $task->save();
+       $notificationId=$request->notificationId;
+       $notification = DB::table('notifications')->where('id', $notificationId);
+       $notification->delete();
+
+    }
+
+    public function changeTaskStatusToCompleted(Request $request){
+
+                 
+        $task=Task::find($request->id);
+        $task->status = 'completed';
+        $task->save();
+        
+     }
+ 
+
+
 
     public function createComment(Request $request){
 
@@ -131,22 +200,10 @@ class TasksController extends Controller
 
 
     ]);
+
+    return redirect('/tasks')->with('success', 'you have successfully added the comment');
     }
 
-    public function markAsRead(Request $request)
-            {
-                $id=$request->id;
-                $notification = DB::table('notifications')->where('id', $id)->update([
-
-                    'read_at' => now()
-                ]);
-              
-              /*  $notification->update([
-
-                'read_at' => now()
-               ]);*/
-             //  return response($notification);
-
-            }
+   
 
 }

@@ -19,7 +19,7 @@ class User extends Authenticatable
         'name', 'email', 'password', 'surname', 'town', 'address', 'department','workplace','img'
     ];
 
-    protected $attributes = [
+   /* protected $attributes = [
         'online' => false,
      ];
 

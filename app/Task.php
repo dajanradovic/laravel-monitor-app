@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Task extends Model
 {
     protected $fillable = [
-        'name', 'email', 'surname', 'town', 'address', 'area','county', 'description', 'phone', 'user_id'
+        'name', 'email', 'surname', 'town', 'address', 'area','county', 'description', 'phone', 'user_id', 'status'
     ];
 
-    protected $attributes = [
+   /*protected $attributes = [
         'status' => 'problem submitted',
-     ];
+     ];*/
  
 
     public function user (){

@@ -21,8 +21,10 @@
  
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
      <p id="chatUsers" style="color:white;" class="bg-primary"><i>users in chatroom:</i></p>
-     <p>{{Auth()->user()->name}}</p>
-
+     @foreach ($chatUsers as $chatUser)
+     
+     <p class="text-warning">{{$chatUser->name}}</p>
+    @endforeach
     </div>
   </div>
   <div class="col-md-1">

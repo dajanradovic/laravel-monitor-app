@@ -14,7 +14,7 @@ class AddOnlineToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('online')->nullable();
+            $table->boolean('online')->default(false);
         });
     }
 

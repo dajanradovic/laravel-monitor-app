@@ -7,6 +7,17 @@
 <?php $workplace= old('workplace'); ?>
 
 <div class="container">
+<div class="row">
+<div class="col-md-12">
+<nav aria-label="breadcrumb " style="margin-left: -15px;" >
+  <ol class="breadcrumb bg-dark text-warning pull-left" style="margin-left: 0px;">
+    <li class="breadcrumb-item active text-warning" aria-current="page">Dashboard</li>
+	 <li class="breadcrumb-item text-warning " aria-current="page">Register new user</li>
+  </ol>
+</nav>
+
+</div>
+</div>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -78,12 +89,10 @@
                             <div class="col-md-6">
                           
                             <select  selected class="form-control selectchange @error('department') is-invalid @enderror" name="department" id="department">
-                                  <option value="" disabled selected hidden>Choose your department</option>
+                                  <option value="" disabled selected hidden>Choose department</option>
                                   <option <?php echo $department == "Phone-agent" ? "selected" : "";?>>Phone-agent</option>
-                                  <option <?php echo $department == "Technical department" ? "selected" : "";?>>Technical department</option>
-
                                   <option <?php echo $department == "Technician on terrain" ? "selected" : "";?>>Technician on terrain</option>
-                                  <option <?php echo $department == "Supervisor" ? "selected" : "";?>>Supervisor</option>
+                                  
                             </select>
                             @error('department')
                                     <span class="invalid-feedback" role="alert">

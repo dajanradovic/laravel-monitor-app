@@ -17,6 +17,16 @@ body {
 </style>
 
 <div class="container ">
+<div class="row">
+<div class="col-md-12">
+<nav aria-label="breadcrumb " style="margin-left: -15px;" >
+  <ol class="breadcrumb bg-dark text-warning pull-left" style="margin-left: 0px;">
+    <li class="breadcrumb-item active text-warning" aria-current="page">Dashboard</li>
+	 <li class="breadcrumb-item text-warning " aria-current="page">Edit task</li>
+  </ol>
+</nav>
+</div>
+</div>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card bg-dark
@@ -204,4 +214,5 @@ body {
         </div>
     </div>
 </div>
+@include('includes.chatinvitationscript')
 @endsection

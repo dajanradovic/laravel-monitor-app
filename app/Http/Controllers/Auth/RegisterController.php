@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Registered;
 use App\Events\SendMailEvent;
+use Illuminate\Support\Facades\Gate;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
@@ -46,7 +47,8 @@ class RegisterController extends Controller
     public function __construct()
     {
        // $this->middleware('register')->only('showRegistrationForm');
-        $this->middleware('guest');
+        //$this->middleware('guest');
+        $this->middleware('auth');
        
     }
 
@@ -58,7 +60,16 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        return view('auth.register');
+        if (Gate::allows('isSupervisor', Auth()->user())) {
+            
+            return view('auth.register');
+        }
+
+        else{
+
+          return   'You are not authorized to register users';
+        }
+      
     }
 
     public function register(Request $request)
@@ -70,11 +81,11 @@ class RegisterController extends Controller
         event(new Registered($user = $this->create($request->all())));
      
 
-        $this->guard()->login($user);
+      
 
        
-        event(new SendMailEvent($user));
-        
+        //event(new SendMailEvent($user));
+        session()->flash('userRegistered', 'new user has been registered');
         return $this->registered($request, $user)
             ?: redirect($this->redirectPath());
 
@@ -136,6 +147,9 @@ class RegisterController extends Controller
         
 
         }
+
+
+        
 
 
         

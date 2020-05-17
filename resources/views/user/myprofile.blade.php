@@ -119,9 +119,8 @@
 
 
 </div>
-    @include('includes.chatinvitationscript')
 
-
+@include('includes.chatinvitationscript')
 @endsection('content')
 
 

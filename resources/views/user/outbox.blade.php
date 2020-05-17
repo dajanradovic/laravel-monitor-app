@@ -71,6 +71,9 @@
           <span>{{$message->subject->name}}</span>
         </a>
   @endforeach
+  @empty($message)
+   <span style="color:white;">Inbox empty</span>
+@endempty
       
       </div>
   </div>
@@ -80,7 +83,7 @@
 </div>
 
 
-
+@include('includes.chatinvitationscript')
 @endsection('content')
 
 

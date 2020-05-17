@@ -26,11 +26,17 @@ use Illuminate\Support\Facades\Config;
 
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return redirect('/tasks');
+})->middleware('auth');
+Route::post('tasks/taskStatusChanged', 'TasksController@changeTaskStatus')->name('proba');
+Route::post('tasks/taskStatusChangedToBeingSolved', 'TasksController@changeTaskStatusToBeingSolved');
+Route::post('tasks/taskStatusCompleted', 'TasksController@changeTaskStatusToCompleted');
+
+
+
+Route::resource('/tasks', 'TasksController')->middleware('auth');
 
 Route::get('tasks/markAsRead', 'TasksController@markAsRead');
-Route::get('tasks/updateTaskStatus', 'TasksController@updateTaskStatus')->name('proba');
 Route::post('tasks/createComment', 'TasksController@createComment' )->name('submitcomment');
 
 
@@ -51,13 +57,13 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::resource('tasks', 'TasksController');
 
 Route::get('/mail', 'MailController@send');
 
 Route::get('dashboard/supervisor/new', 'SupervisorController@newTasks')->name('supervisor/addedtasks');
-Route::get('markMessageAsRead', 'SupervisorController@markMessageAsRead');
+Route::post('markMessageAsRead', 'SupervisorController@markMessageAsRead');
 
+Route::post('users/markInboxMessageAsRead', 'UsersController@markInboxMessageAsRead');
 Route::get('/users/profile', 'UsersController@showMyProfile');
 Route::get('/users/profile/inbox/{privatemessage}', 'UsersController@showMessage');
 Route::post('/users/profile/inbox/reply', 'UsersController@privateMessageReply');

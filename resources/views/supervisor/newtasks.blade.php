@@ -25,7 +25,8 @@
       <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/tasks')}}"  aria-selected="true">Home</a>
       <a class="nav-link text-white" id="v-pills-profile-tab"  href="{{url ('/users/profile')}}"  aria-controls="v-pills-profile" aria-selected="false">Profile</a>
       <a class="nav-link text-white active" id="v-pills-messages-tab"  href="{{route ('supervisor/addedtasks')}}" aria-selected="false">New tasks<span class="badge badge-pill badge-warning ml-1">{{auth()->user()->notifications->count()}}</span></a>
-      
+	  <a class="nav-link text-white" id="v-pills-home-tab"  href="{{url ('/register')}}"  aria-selected="true">Add new user</a>
+
   	<a class="nav-link text-white" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Private messages
   </a>
@@ -55,16 +56,21 @@
   </div>
   <div class="col-md-9">
   
+		
+
+		@can('isTechnician', Auth()->user())
+		@include ('includes.newTasksTechnician')
+		@endcan
+
+		@cannot('isTechnician', Auth()->user())
 		@if(sizeof($unreadTasksAdded) == 0)
 		<p class="text-white font-weight-bold mt-3">There are currently no new tasks</p>
 		@endif
-
-
   
         @foreach($tasks as $task)
 			@foreach ($unreadTasksAdded as $unreadTaskAdded)
             	@if ($task->id == $unreadTaskAdded->data['taskId'])
-                    <div class="card text-center mt-3 border border-dark">
+                    <div class="card text-center mt-3  border border-dark">
                         <div class="card-header">
                     	 <span class="float-left">Problem number </span>
                             	<p>
@@ -73,9 +79,10 @@
                     	@endcannot 
                             	@can('isSupervisor', Auth()->user())
 	
-                            	<button id="updateTaskStatus{{$task->id}}" onclick="markAsRead('{{$unreadTaskAdded->id}}')"  class="markAsRead btn btn-danger float-right mt-3" type="button" data-toggle="collapse" data-target=".multi-collapse{{$task->id}}" aria-expanded="false" aria-controls="multiCollapseExample{{$task->id}} multiCollapseExample2{{$task->id}}">Details</button>
+                            	<button id="updateTaskStatus{{$task->id}}" onclick="markMessageAsRead('{{$task->id}}', '{{$unreadTaskAdded->id}}');"  class="btn btn-danger float-right mt-3" type="button" data-toggle="collapse" data-target=".multi-collapse{{$task->id}}" aria-expanded="false" aria-controls="multiCollapseExample{{$task->id}} multiCollapseExample2{{$task->id}}">Details</button>
 	
-	                            @endcan
+								@endcan
+							
 			 
 			  
 		                        	  @if ($task->status == 'problem submitted' && Auth()->user()->department == 'Phone-agent')
@@ -122,7 +129,7 @@
 								</ul>
 								</div>
 
-								<div >
+								<div style="overflow:auto;">
 
 								<ul class="">
 									<li class="text-md-left  mb-1" style="width:190px;">{{$task->name}}</li>
@@ -132,7 +139,7 @@
 									<li class="text-md-left  mb-1"style="width:190px;">{{$task->county}}</li>
 									<li class="text-md-left  mb-1"style="width:190px;">{{$task->phone}}</li>
 									
-									<li class="text-md-left  mb-1 " style="width:190px;">{{$task->email}}></li>
+									<li class="text-md-left  mb-1 " style="width:190px;">{{$task->email}}</li>
 									
 
 									</ul>
@@ -153,11 +160,11 @@
 	 <p class="text-danger text-md-left">- {{$comment->body}} <small class="text-md-left text-dark" style="padding-bottom: 0px;">written by {{$comment->user->name}} on {{$comment->created_at}}</small></p>
 	 
 	 @endforeach
-	 <button id="openInputCommentBox" class="btn btn-sm btn-warning" style="width:120px; padding: 0px;">Enter comment</button>
-	 <div style="text-align: left;" id="inputComment"><form id="submitComment" action="{{route ('submitcomment')}}" method="POST">
+	 <button class="openInputCommentBox btn btn-sm btn-warning" style="width:120px; padding: 0px;">Enter comment</button>
+	 <div style="text-align: left;" class="inputComment"><form class="submitComment" action="{{route ('submitcomment')}}" method="POST">
 	 @csrf
 	 <input type="hidden" name="task_id" value="{{$task->id}}" />
-	 <input  type="text" name="comment"/></form>
+	 <input  type="text" name="comment"/></form><span class="badge badge-pill badge-primary ml-1 submitCommentForm" style="cursor:pointer;"  title="Post a comment">Go</span>
 	
       </div>
     </div>
@@ -167,23 +174,8 @@
   
   
   
-  <div class="card-footer text-muted">
-  <div class="arrow-steps clearfix">
-          <div class="step current"> <span>Problem submitted</span> </div>
-		  @if($task->status == 'reviewed by supervisor')
-			<div class="step current"> <span style="margin: 0 auto;">Reviewed by supervisor</span> </div>
-		@else
-          <div class="step"> <span style="margin: 0 auto;">Reviewed by supervisor</span> </div>
-		  @endif
-          <div class="step"> <span> Problem delegated</span> </div>
-          <div class="step"> <span>Being solved</span> </div>
-			</div>
-	<!--	<div class="nav clearfix">
-        <a href="#" class="prev">Previous</a>
-        <a href="#" class="next pull-right">Next</a>
-		</div>-->
+@include('includes.arrow')
 
-</div>
 </div>
 </div>
 
@@ -195,12 +187,12 @@
 
    
 </div>
-
+@endcannot
 
 </div>
 
 
-
+@include('includes.chatinvitationscript')
 @endsection('content')
 
 

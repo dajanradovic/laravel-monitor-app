@@ -27,18 +27,19 @@ class SupervisorController extends Controller
 
                          $tasks= Task::all();
                          $unreadTasksAdded = Auth()->user()->unreadNotifications->where('type', 'App\Notifications\TaskAdded');
-        
-        return view ('supervisor.newtasks')->with(['tasks'=> $tasks, 'users'=>$users, 'unreadTasksAdded' => $unreadTasksAdded ]);
+                         $unreadTasksTechnician = Auth()->user()->unreadNotifications->where('type', 'App\Notifications\TaskDelegatedToTechnician');
+
+        return view ('supervisor.newtasks')->with(['tasks'=> $tasks, 'users'=>$users, 'unreadTasksAdded' => $unreadTasksAdded, 'unreadTasksTechnician' =>$unreadTasksTechnician ]);
 
     }
 
     public function markMessageAsRead(Request $request){
-
+       
         $id=$request->id;
-        $notification = DB::table('notifications')->where('id', $id)->update([
-
-            'read_at' => now()
-        ]);
+        $notification = DB::table('notifications')->where('id', $id);
+        $notification->delete();
+    
+    
     }
 
 

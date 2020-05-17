@@ -23,7 +23,7 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
-
+   
 
     public function logout(Request $request)
     {
@@ -42,6 +42,13 @@ class LoginController extends Controller
 
         return $this->loggedOut($request) ?: redirect('/');
     }
+
+    protected function authenticated(Request $request, $user)
+    {
+        $user->online=1;
+        $user->save();
+        return redirect('/tasks');
+    }
     /**
      * 
      * 
@@ -49,7 +56,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected $redirectTo = 'RouteServiceProvider::HOME';
 
     /**
      * Create a new controller instance.
