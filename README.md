@@ -1,3 +1,14 @@
+
+App made like a monitoring system for, let's say, small telecom company. You have different users assigned different tasks. Users can chat between each other, they can send private messages and lot more.
+
+Log in credentials:
+
+login: admin@company.com
+pass: password
+
+
+
+
 <p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
 
 <p align="center">
